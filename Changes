@@ -1,7 +1,12 @@
 Revision history for Perl extension Compress::LeadingBlankSpaces.
 
+0.02  Fri Mar 26 18:50:00 2004
+	- bug-fix: <TEXTAREA>...</TEXTAREA> should not be compressed anymore.
+	  Thanks to Igor Jovanovic for the hint.
+
 0.01  Tue Jul 23 13:40:22 2002
 	- original version; created by h2xs 1.21 with options
 		-A -X -n Compress::LeadingBlankSpaces
 	- original code & documentation is created.
+	  2787 Sep 14  2003 Compress-LeadingBlankSpaces-0.01.tar.gz
 

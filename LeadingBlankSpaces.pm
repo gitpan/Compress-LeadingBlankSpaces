@@ -4,16 +4,22 @@ use 5.004;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub new { # class/instance constructor, ready to sub-class
 	my $proto = shift;
 	my $class = ref($proto) || $proto;
 	my $self  = {};
-
-	$self->{FORMATTED}   = undef;	# status of incoming content.
-					# we should never compress blank spaces within the FORMATTED content.
 	bless ($self, $class);
+
+	$self->{TAGS} = [];	# a reference to the array of special tags
+	$self->{TAGS}->[0]->{HEADER} = '<PRE>';
+	$self->{TAGS}->[0]->{FOOTER} = '</PRE>';
+	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA>';
+	$self->{TAGS}->[1]->{FOOTER} = '</TEXTAREA>';
+
+	$self->{FORMATTED}   = -1;	# index of currently active special tag.
+					# we should never compress blank spaces within the FORMATTED content.
 	return $self;
 }
 
@@ -32,11 +38,12 @@ sub squeeze_string {
 	my $self = shift;
 	my $buf = shift;
 	return '' unless $buf; # empty, zero or undefined input...
-	my $beg_tag = '<PRE>';
-	my $end_tag = '</PRE>';
 	chop $buf;
-	if ($self->{FORMATTED}){ # no compression this times
-		$self->{FORMATTED} = '' if uc $buf =~ /$end_tag/; # resume the compression since the next input
+	if ( $self->{FORMATTED} >= 0 ){
+		# no compression:
+		my $end_tag = $self->{TAGS}->[$self->{FORMATTED}]->{FOOTER};
+		$self->{FORMATTED} = -1 if uc $buf =~ /$end_tag/;	# resume the compression
+									# since the next input
 	} else { # try to compress
 		while ($buf =~ /\r/o){
 			$buf =~ s/\r+//o;
@@ -45,7 +52,15 @@ sub squeeze_string {
 		while ($buf =~ /^\s/o){
 			$buf =~ s/^\s+//o;
 		}
-		$self->{FORMATTED} = 1 if uc $buf =~ /$beg_tag/; # hold on the compression since the next input
+		my $index = 0;
+		foreach ( @{ $self->{TAGS} } ){
+			
+			my $beg_tag = $self->{TAGS}->[$index]->{HEADER};
+			$self->{FORMATTED} = $index if uc $buf =~ /$beg_tag/;	# hold on the compression
+										# since the next input
+			last if $self->{FORMATTED} >= 0;
+			$index += 1;
+		}
 	}
 	return '' unless length($buf) > 0;
 	return $buf."\n";
@@ -74,26 +89,26 @@ Compress::LeadingBlankSpaces - Perl class to compress leading blank spaces in (H
 
 This class provides the functionality for the most simple web content compression.
 
-Basically, the outgoing web content (HTML, JavaScript, etc.) consists of many leading blank spaces,
+Basically, the outgoing web content (HTML, JavaScript, etc.) contains a lot of leading blank spaces,
 because of being structured on development stage.
 Usually, the client browser ignores leading blank spaces.
-Indeed, the amount of those blank spaces is big enough,
-and could be estimated as 10 to 20 percent of the length of regular commercial web page.
-We can reduce this part of web traffic on busy production servers
-with no visible impact on transferred web content,
-especially for those old browsers who do not understand the modern content compression, like gzip format.
+Indeed, the amount of those blank spaces is significant
+and could be estimated as 10 to 20 percent of the length of regular web page.
+We can reduce this part of the web traffic on busy servers
+with no visible impact on transferred web content. This could be helpful
+especially for those old browsers which fail to understand the modern content compression.
 
-The main functionality of this class is concentrated within the C<squeeze_string> member function,
-which is supposed to be used inside the data transfer loop on server side.
+The main functionality of this class is concentrated within the C<squeeze_string> member function
+that is supposed to be used inside the data transfer loop on server side.
 The rest of the class is developed to serve possible exceptions, like pre-formatted data within HTML.
 
-In this version of the class, the only one tag produces compression exceptions:
+In this version of the class, there are two tags those produce compression exceptions:
 
-<PRE>
- ...
-</PRE>
+<PRE> ... </PRE>
 
-which is case insensitive in implementation.
+<TEXTAREA> ... </TEXTAREA>
+
+case insensitive in implementation.
 
 =head1 EXPORT
 
@@ -105,15 +120,15 @@ Slava Bizyayev E<lt>slava@cpan.orgE<gt> - Freelance Software Developer & Consult
 
 =head1 COPYRIGHT AND LICENSE
 
-I<Copyright (C) 2002 Slava Bizyayev. All rights reserved.>
+I<Copyright (C) 2002-2004 Slava Bizyayev. All rights reserved.>
 
-  This package is free software.
-  You can use it, redistribute it, and/or modify it under the same terms as Perl itself.
-  The latest version of this module can be found on CPAN.
+This package is free software.
+You can use it, redistribute it, and/or modify it under the same terms as Perl itself.
+The latest version of this module can be found on CPAN.
 
 =head1 SEE ALSO
 
-C<mod_perl> at F<http://perl.apache.org>
+C<Web Content Compression FAQ> at F<http://perl.apache.org/docs/tutorials/client/compression/compression.html>
 
 C<Apache::Dynagzip> module can be found on CPAN.
 

@@ -1,4 +1,4 @@
-Compress/LeadingBlankSpaces version 0.01
+Compress/LeadingBlankSpaces version 0.02
 ========================================
 
 =head1 NAME
@@ -9,26 +9,26 @@ Compress::LeadingBlankSpaces - Perl class to compress leading blank spaces in (H
 
 This class provides the functionality for the most simple web content compression.
 
-Basically, the outgoing web content (HTML, JavaScript, etc.) consists of many leading blank spaces,
+Basically, the outgoing web content (HTML, JavaScript, etc.) contains a lot of leading blank spaces,
 because of being structured on development stage.
 Usually, the client browser ignores leading blank spaces.
-Indeed, the amount of those blank spaces is big enough,
-and could be estimated as 10 to 20 percent of the length of regular commercial web page.
-We can reduce this part of web traffic on busy production servers
+Indeed, the amount of those blank spaces is as significant
+as 10 to 20 percent of the length of regular web page.
+We can reduce this part of web traffic on busy servers
 with no visible impact on transferred web content,
-especially for those old browsers who do not understand the modern content compression, like gzip format.
+especially for those old browsers, which fail to understand the modern content compression.
 
-The main functionality of this class is concentrated within the C<squeeze_string> member function,
-which is supposed to be used inside the data transfer loop on server side.
+The main functionality of this class is concentrated within the C<squeeze_string> member function
+that is supposed to be used inside the data transfer loop on server side.
 The rest of the class is developed to serve possible exceptions, like pre-formatted data within HTML.
 
-In this version of the class, the only one tag produces compression exceptions:
+In this version of the class, the tags those produce compression exceptions are:
 
-E<lt>PREE<gt>
- ...
-E<lt>/PREE<gt>
+E<lt>PREE<gt> ...  E<lt>/PREE<gt>
 
-which is case insensitive in implementation.
+E<lt>TEXTAREA<gt> ... E<lt>/TEXTAREA<gt>
+
+All are case insensitive in implementation.
  
 =head1 INSTALLATION
 
@@ -51,17 +51,17 @@ Slava Bizyayev E<lt>slava@cpan.orgE<gt> - Freelance Software Developer & Consult
 
 =head1 COPYRIGHT AND LICENSE
 
-I<Copyright (C) 2002 Slava Bizyayev. All rights reserved.>
+I<Copyright (C) 2002-2004 Slava Bizyayev. All rights reserved.>
 
-  This package is free software.
-  You can use it, redistribute it, and/or modify it under the same terms as Perl itself.
-  The latest version of this module can be found on CPAN.
+This package is free software.
+You can use it, redistribute it, and/or modify it under the same terms as Perl itself.
+The latest version of this module can be found on CPAN.
 
 =head1 SEE ALSO
 
-  C<mod_perl> at F<http://perl.apache.org>
+C<Web Content Compression FAQ> at F<http://perl.apache.org/docs/tutorials/client/compression/compression.html>
 
-  C<Apache::Dynagzip> module can be found on CPAN.
+C<Apache::Dynagzip> module can be found on CPAN.
 
 =cut
 
