@@ -1,0 +1,67 @@
+Compress/LeadingBlankSpaces version 0.01
+========================================
+
+=head1 NAME
+
+Compress::LeadingBlankSpaces - Perl class to compress leading blank spaces in (HTML, JavaScript, etc.) web content.
+
+=head1 DESCRIPTION
+
+This class provides the functionality for the most simple web content compression.
+
+Basically, the outgoing web content (HTML, JavaScript, etc.) consists of many leading blank spaces,
+because of being structured on development stage.
+Usually, the client browser ignores leading blank spaces.
+Indeed, the amount of those blank spaces is big enough,
+and could be estimated as 10 to 20 percent of the length of regular commercial web page.
+We can reduce this part of web traffic on busy production servers
+with no visible impact on transferred web content,
+especially for those old browsers who do not understand the modern content compression, like gzip format.
+
+The main functionality of this class is concentrated within the C<squeeze_string> member function,
+which is supposed to be used inside the data transfer loop on server side.
+The rest of the class is developed to serve possible exceptions, like pre-formatted data within HTML.
+
+In this version of the class, the only one tag produces compression exceptions:
+
+E<lt>PREE<gt>
+ ...
+E<lt>/PREE<gt>
+
+which is case insensitive in implementation.
+ 
+=head1 INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+=head1 DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  Perl 5.004 or higher.
+
+=head1 AUTHOR
+
+Slava Bizyayev E<lt>slava@cpan.orgE<gt> - Freelance Software Developer & Consultant.
+
+=head1 COPYRIGHT AND LICENSE
+
+I<Copyright (C) 2002 Slava Bizyayev. All rights reserved.>
+
+  This package is free software.
+  You can use it, redistribute it, and/or modify it under the same terms as Perl itself.
+  The latest version of this module can be found on CPAN.
+
+=head1 SEE ALSO
+
+  C<mod_perl> at F<http://perl.apache.org>
+
+  C<Apache::Dynagzip> module can be found on CPAN.
+
+=cut
+

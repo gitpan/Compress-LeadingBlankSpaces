@@ -1,0 +1,7 @@
+Revision history for Perl extension Compress::LeadingBlankSpaces.
+
+0.01  Tue Jul 23 13:40:22 2002
+	- original version; created by h2xs 1.21 with options
+		-A -X -n Compress::LeadingBlankSpaces
+	- original code & documentation is created.
+
