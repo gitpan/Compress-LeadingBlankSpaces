@@ -4,7 +4,7 @@
 #########################
 
 use Test;
-BEGIN { plan tests => 17 };
+BEGIN { plan tests => 23 };
 use Compress::LeadingBlankSpaces;
 ok(1); # module is available ok.
 
@@ -16,7 +16,7 @@ ok($compress_obj); # new() works
 
 # 3:
 my $status = $compress_obj->format_status();
-# printf ("status = %s\n",$status);
+# printf ("initial status = %s => ",$status);
 ok ($status eq -1); # initial status is set properly
 
 # 4:
@@ -84,6 +84,36 @@ $status = $compress_obj->format_status();
 ok ($status < 0); # status is changed properly
 
 # 17:
+$tag_pre = '<CODE something>'."\n";
+$temp = $compress_obj->squeeze_string($tag_pre);
+$status = $compress_obj->format_status();
+# printf ("status = %s\n",$status);
+ok ($status >= 0); # status is changed properly
+$temp = $compress_obj->squeeze_string($dirty);
+# printf ("'%s'",$temp);
+ok ($temp eq $dirty); # squeeze_string() works when (status != -1)
+$tag_pre_end = '</CODE>'."\n";
+$temp = $compress_obj->squeeze_string($tag_pre_end);
+$status = $compress_obj->format_status();
+# printf ("status = %s\n",$status);
+ok ($status < 0); # status is changed properly
+
+# 20:
+$tag_pre = '<code the following>'."\n";
+$temp = $compress_obj->squeeze_string($tag_pre);
+$status = $compress_obj->format_status();
+# printf ("status = %s\n",$status);
+ok ($status >= 0); # status is changed properly
+$temp = $compress_obj->squeeze_string($dirty);
+# printf ("'%s'",$temp);
+ok ($temp eq $dirty); # squeeze_string() works when (status != -1)
+$tag_pre_end = '</code>'."\n";
+$temp = $compress_obj->squeeze_string($tag_pre_end);
+$status = $compress_obj->format_status();
+# printf ("status = %s\n",$status);
+ok ($status < 0); # status is changed properly
+
+# 23:
 ok(1); # If we made it this far, we're ok.
 
 #########################

@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 sub new { # class/instance constructor, ready to sub-class
 	my $proto = shift;
@@ -17,6 +17,8 @@ sub new { # class/instance constructor, ready to sub-class
 	$self->{TAGS}->[0]->{FOOTER} = '</PRE>';
 	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA'; # optional parameters are expected
 	$self->{TAGS}->[1]->{FOOTER} = '</TEXTAREA>';
+	$self->{TAGS}->[2]->{HEADER} = '<CODE'; # optional parameters are expected
+	$self->{TAGS}->[2]->{FOOTER} = '</CODE>';
 
 	$self->{FORMATTED}   = -1;	# index of currently active special tag.
 					# we should never compress blank spaces within the FORMATTED content.
@@ -96,19 +98,23 @@ Indeed, the amount of those blank spaces is significant
 and could be estimated as 10 to 20 percent of the length of regular web page.
 We can reduce this part of the web traffic on busy servers
 with no visible impact on transferred web content. This could be helpful
-especially for those old browsers which fail to understand the modern content compression.
+especially for old browsers incapable to understand modern content compression.
 
 The main functionality of this class is concentrated within the C<squeeze_string> member function
 that is supposed to be used inside the data transfer loop on server side.
 The rest of the class is developed to serve possible exceptions, like pre-formatted data within HTML.
 
-In this version of the class, there are two tags those produce compression exceptions:
+In this version of the class, there are three tags those produce compression exceptions:
 
-<PRE> ... </PRE>
+E<lt>PRE ...E<gt> ... E<lt>/PREE<gt>
 
-<TEXTAREA> ... </TEXTAREA>
+E<lt>TEXTAREA ...E<gt> ... E<lt>/TEXTAREAE<gt>
+
+E<lt>CODE ...E<gt> ... E<lt>/CODEE<gt>
 
 case insensitive in implementation.
+
+Neither recursion nor nesting of exceptions are supported.
 
 =head1 EXPORT
 

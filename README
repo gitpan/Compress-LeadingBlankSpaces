@@ -1,4 +1,4 @@
-Compress/LeadingBlankSpaces version 0.03
+Compress/LeadingBlankSpaces version 0.04
 ========================================
 
 =head1 NAME
@@ -16,20 +16,25 @@ Indeed, the amount of those blank spaces is as significant
 as 10 to 20 percent of the length of regular web page.
 We can reduce this part of web traffic on busy servers
 with no visible impact on transferred web content,
-especially for those old browsers, which fail to understand the modern content compression.
+especially for old browsers incapable to understand modern content compression.
 
 The main functionality of this class is concentrated within the C<squeeze_string> member function
 that is supposed to be used inside the data transfer loop on server side.
-The rest of the class is developed to serve possible exceptions, like pre-formatted data within HTML.
+The rest of the class is developed in order to serve possible exceptions,
+like pre-formatted data within HTML.
 
 In this version of the class, the tags those produce compression exceptions are:
 
-E<lt>PREE<gt> ...  E<lt>/PREE<gt>
+E<lt>PRE ...E<gt> ...  E<lt>/PREE<gt>
 
-E<lt>TEXTAREA<gt> ... E<lt>/TEXTAREA<gt>
+E<lt>TEXTAREA ...E<gt> ... E<lt>/TEXTAREAE<gt>
+
+E<lt>CODE ...E<gt> ...  E<lt>/CODEE<gt>
 
 All are case insensitive in implementation.
- 
+
+Neither recursion nor nesting of exceptions are allowed.
+
 =head1 INSTALLATION
 
 To install this module type the following:
