@@ -1,8 +1,13 @@
 Revision history for Compress::LeadingBlankSpaces.
 
-0.05  Thu Jul 29 12:30:00 2004
+0.06  Sun Aug 01 14:00:00 2004
+	- Clean up version inspired by conversation with Chris. More restrictive masks and rules
+	  should help to survive possible future inventions of new HTML tags. Tests were modified.
+
+0.05  Thu Jul 29 07:00:00 2004
 	- The problem of the file's last character that is not a 'new-string'
 	  was brought to my attention by Chris Clandingboel. Fixed now. Thanks Chris!
+	3882 Jul 29 07:24 Compress-LeadingBlankSpaces-0.05.tar.gz
 
 0.04  Thu May 06 01:00:00 2004
 	- new feature: <CODE ...>...</CODE> should not be compressed anymore.

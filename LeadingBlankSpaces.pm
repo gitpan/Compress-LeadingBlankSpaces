@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 sub new { # class/instance constructor, ready to sub-class
 	my $proto = shift;
@@ -13,11 +13,11 @@ sub new { # class/instance constructor, ready to sub-class
 	bless ($self, $class);
 
 	$self->{TAGS} = [];	# a reference to the array of special tags
-	$self->{TAGS}->[0]->{HEADER} = '<PRE[ ,>]'; # optional parameters are expected
+	$self->{TAGS}->[0]->{HEADER} = '<PRE'; # optional parameters are expected
 	$self->{TAGS}->[0]->{FOOTER} = '</PRE>';
-	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA[ ,>]'; # optional parameters are expected
+	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA'; # optional parameters are expected
 	$self->{TAGS}->[1]->{FOOTER} = '</TEXTAREA>';
-	$self->{TAGS}->[2]->{HEADER} = '<CODE[ ,>]'; # optional parameters are expected
+	$self->{TAGS}->[2]->{HEADER} = '<CODE'; # optional parameters are expected
 	$self->{TAGS}->[2]->{FOOTER} = '</CODE>';
 
 	$self->{FORMATTED}   = -1;	# index of currently active special tag.
@@ -45,12 +45,10 @@ sub squeeze_string {
 	if ( $self->{FORMATTED} >= 0 ){
 		# no compression:
 		my $end_tag = $self->{TAGS}->[$self->{FORMATTED}]->{FOOTER};
-		$self->{FORMATTED} = -1 if uc($buf) =~ /$end_tag/;	# resume the compression
-									# since the next input
+		# note: full end-tag should appear within one string only!
+		$self->{FORMATTED} = -1 if $buf =~ /$end_tag/i;	# resume the compression
+								# since the next input
 	} else { # try to compress
-		while ($buf =~ /\r/o){
-			$buf =~ s/\r+//o;
-		}
 		$buf =~ s/^\s+(\S.*)/$1/;
 		while ($buf =~ /^\s/o){
 			$buf =~ s/^\s+//o;
@@ -59,8 +57,15 @@ sub squeeze_string {
 		foreach ( @{ $self->{TAGS} } ){
 			
 			my $beg_tag = $self->{TAGS}->[$index]->{HEADER};
-			$self->{FORMATTED} = $index if uc($buf) =~ /$beg_tag/;	# hold on the compression
-										# since the next input
+			if ($buf =~ /$beg_tag/i){ # it might be a special tag
+				if ($buf =~ /$beg_tag>/i  # simple
+				 or $buf =~ /$beg_tag\s/i # has in-line parameters
+				 or $buf =~ /$beg_tag$/i  # has next-line parameters
+				   ){ # this _is_ a special tag
+					$self->{FORMATTED} = $index;	# hold on the compression
+									# since the next input
+				}
+			}
 			last if $self->{FORMATTED} >= 0;
 			$index += 1;
 		}
@@ -94,7 +99,7 @@ This class provides the functionality for the most simple web content compressio
 
 Basically, the outgoing web content (HTML, JavaScript, etc.) contains a lot of leading blank spaces,
 because of being structured on development stage.
-Usually, the client browser ignores leading blank spaces.
+Usually, the browser ignores all leading blank spaces.
 Indeed, the amount of those blank spaces is significant
 and could be estimated as 10 to 20 percent of the length of regular web page.
 We can reduce this part of the web traffic on busy servers
@@ -107,19 +112,15 @@ The rest of the class is developed to serve possible exceptions, like pre-format
 
 In this version of the class, there are three tags those produce compression exceptions:
 
+E<lt>CODE ...E<gt> ... E<lt>/CODEE<gt>
+
 E<lt>PRE ...E<gt> ... E<lt>/PREE<gt>
 
 E<lt>TEXTAREA ...E<gt> ... E<lt>/TEXTAREAE<gt>
 
-E<lt>CODE ...E<gt> ... E<lt>/CODEE<gt>
-
 case insensitive in implementation.
 
-Neither recursion nor nesting of exceptions are supported.
-
-=head1 EXPORT
-
-None.
+Nesting of exceptions is not supported.
 
 =head1 AUTHOR
 

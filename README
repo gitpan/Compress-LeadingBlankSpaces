@@ -1,4 +1,4 @@
-Compress/LeadingBlankSpaces version 0.04
+Compress/LeadingBlankSpaces version 0.06
 ========================================
 
 =head1 NAME
@@ -11,7 +11,7 @@ This class provides the functionality for the most simple web content compressio
 
 Basically, the outgoing web content (HTML, JavaScript, etc.) contains a lot of leading blank spaces,
 because of being structured on development stage.
-Usually, the client browser ignores leading blank spaces.
+Usually, browser ignores leading blank spaces.
 Indeed, the amount of those blank spaces is as significant
 as 10 to 20 percent of the length of regular web page.
 We can reduce this part of web traffic on busy servers
@@ -25,15 +25,15 @@ like pre-formatted data within HTML.
 
 In this version of the class, the tags those produce compression exceptions are:
 
+E<lt>CODE ...E<gt> ...  E<lt>/CODEE<gt>
+
 E<lt>PRE ...E<gt> ...  E<lt>/PREE<gt>
 
 E<lt>TEXTAREA ...E<gt> ... E<lt>/TEXTAREAE<gt>
 
-E<lt>CODE ...E<gt> ...  E<lt>/CODEE<gt>
-
 All are case insensitive in implementation.
 
-Neither recursion nor nesting of exceptions are allowed.
+Nesting of exceptions is not allowed.
 
 =head1 INSTALLATION
 
