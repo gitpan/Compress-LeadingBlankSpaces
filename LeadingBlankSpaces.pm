@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 sub new { # class/instance constructor, ready to sub-class
 	my $proto = shift;
@@ -13,11 +13,11 @@ sub new { # class/instance constructor, ready to sub-class
 	bless ($self, $class);
 
 	$self->{TAGS} = [];	# a reference to the array of special tags
-	$self->{TAGS}->[0]->{HEADER} = '<PRE'; # optional parameters are expected
+	$self->{TAGS}->[0]->{HEADER} = '<PRE[ ,>]'; # optional parameters are expected
 	$self->{TAGS}->[0]->{FOOTER} = '</PRE>';
-	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA'; # optional parameters are expected
+	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA[ ,>]'; # optional parameters are expected
 	$self->{TAGS}->[1]->{FOOTER} = '</TEXTAREA>';
-	$self->{TAGS}->[2]->{HEADER} = '<CODE'; # optional parameters are expected
+	$self->{TAGS}->[2]->{HEADER} = '<CODE[ ,>]'; # optional parameters are expected
 	$self->{TAGS}->[2]->{FOOTER} = '</CODE>';
 
 	$self->{FORMATTED}   = -1;	# index of currently active special tag.
@@ -40,7 +40,8 @@ sub squeeze_string {
 	my $self = shift;
 	my $buf = shift;
 	return '' unless $buf; # empty, zero or undefined input...
-	chop $buf;
+	chomp $buf;	# the problem of the file's last character that is not a 'new-string'
+			# was brought to my attention by Chris Clandingboel on 07/29/04. Thanks Chris!
 	if ( $self->{FORMATTED} >= 0 ){
 		# no compression:
 		my $end_tag = $self->{TAGS}->[$self->{FORMATTED}]->{FOOTER};
