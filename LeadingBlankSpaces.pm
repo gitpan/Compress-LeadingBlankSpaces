@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 sub new { # class/instance constructor, ready to sub-class
 	my $proto = shift;
@@ -13,9 +13,9 @@ sub new { # class/instance constructor, ready to sub-class
 	bless ($self, $class);
 
 	$self->{TAGS} = [];	# a reference to the array of special tags
-	$self->{TAGS}->[0]->{HEADER} = '<PRE>';
+	$self->{TAGS}->[0]->{HEADER} = '<PRE'; # optional parameters are expected
 	$self->{TAGS}->[0]->{FOOTER} = '</PRE>';
-	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA>';
+	$self->{TAGS}->[1]->{HEADER} = '<TEXTAREA'; # optional parameters are expected
 	$self->{TAGS}->[1]->{FOOTER} = '</TEXTAREA>';
 
 	$self->{FORMATTED}   = -1;	# index of currently active special tag.
@@ -31,7 +31,7 @@ sub format_status {
 	my $self = shift;
 	my $val = shift;
 	$self->{FORMATTED} = $val if defined ($val);
-	return $self->{FORMATED};
+	return $self->{FORMATTED};
 }
 
 sub squeeze_string {
@@ -42,7 +42,7 @@ sub squeeze_string {
 	if ( $self->{FORMATTED} >= 0 ){
 		# no compression:
 		my $end_tag = $self->{TAGS}->[$self->{FORMATTED}]->{FOOTER};
-		$self->{FORMATTED} = -1 if uc $buf =~ /$end_tag/;	# resume the compression
+		$self->{FORMATTED} = -1 if uc($buf) =~ /$end_tag/;	# resume the compression
 									# since the next input
 	} else { # try to compress
 		while ($buf =~ /\r/o){
@@ -56,7 +56,7 @@ sub squeeze_string {
 		foreach ( @{ $self->{TAGS} } ){
 			
 			my $beg_tag = $self->{TAGS}->[$index]->{HEADER};
-			$self->{FORMATTED} = $index if uc $buf =~ /$beg_tag/;	# hold on the compression
+			$self->{FORMATTED} = $index if uc($buf) =~ /$beg_tag/;	# hold on the compression
 										# since the next input
 			last if $self->{FORMATTED} >= 0;
 			$index += 1;
@@ -77,7 +77,7 @@ Compress::LeadingBlankSpaces - Perl class to compress leading blank spaces in (H
 
   use Compress::LeadingBlankSpaces;
 
-  my $lco_r = LeadingBlankSpaces->new();
+  my $lco_r = Compress::LeadingBlankSpaces->new();
   . . .
   my $source_string = '     some content'."\n";
   . . .
